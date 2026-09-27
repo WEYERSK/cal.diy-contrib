@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { MembershipRole } from "@calcom/prisma/enums";
 
-import type { PermissionMembershipRepository } from "../repositories/PermissionMembershipRepository";
+import type { PrismaPermissionMembershipRepository } from "../repositories/PrismaPermissionMembershipRepository";
 import { PermissionCheckService } from "./PermissionCheckService";
 
 type Membership = { userId: number; teamId: number; role: MembershipRole; accepted: boolean };
@@ -33,7 +33,7 @@ const fakeRepository = {
     memberships.filter((m) => m.userId === userId && m.accepted && roles.includes(m.role)).map((m) => m.teamId),
   findChildTeamIds: async (parentIds: number[]) =>
     teams.filter((t) => t.parentId !== null && parentIds.includes(t.parentId)).map((t) => t.id),
-} as PermissionMembershipRepository;
+} as PrismaPermissionMembershipRepository;
 
 const service = new PermissionCheckService(fakeRepository);
 const ADMIN_ROLES = [MembershipRole.ADMIN, MembershipRole.OWNER];

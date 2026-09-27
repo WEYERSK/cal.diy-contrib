@@ -1,11 +1,11 @@
 import type { PrismaClient } from "@calcom/prisma";
 import type { MembershipRole } from "@calcom/prisma/enums";
 
-export class PermissionMembershipRepository {
+export class PrismaPermissionMembershipRepository {
   constructor(private prismaClient: PrismaClient) {}
 
   static async withGlobalPrisma() {
-    return new PermissionMembershipRepository((await import("@calcom/prisma")).prisma);
+    return new PrismaPermissionMembershipRepository((await import("@calcom/prisma")).prisma);
   }
 
   /** The team's parent team id, or null when it has none (or the team does not exist). */

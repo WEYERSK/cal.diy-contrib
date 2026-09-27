@@ -1,6 +1,6 @@
 import { MembershipRole } from "@calcom/prisma/enums";
 
-import { PermissionMembershipRepository } from "../repositories/PermissionMembershipRepository";
+import { PrismaPermissionMembershipRepository } from "../repositories/PrismaPermissionMembershipRepository";
 
 type Role = MembershipRole | `${MembershipRole}`;
 
@@ -29,14 +29,14 @@ const INHERITED_ROLES: MembershipRole[] = [MembershipRole.ADMIN, MembershipRole.
  * No roles, no team, or no accepted membership means no access.
  */
 export class PermissionCheckService {
-  private repositoryPromise: Promise<PermissionMembershipRepository> | undefined;
+  private repositoryPromise: Promise<PrismaPermissionMembershipRepository> | undefined;
 
-  constructor(repository?: PermissionMembershipRepository) {
+  constructor(repository?: PrismaPermissionMembershipRepository) {
     if (repository) this.repositoryPromise = Promise.resolve(repository);
   }
 
   private getRepository() {
-    this.repositoryPromise ??= PermissionMembershipRepository.withGlobalPrisma();
+    this.repositoryPromise ??= PrismaPermissionMembershipRepository.withGlobalPrisma();
     return this.repositoryPromise;
   }
 
