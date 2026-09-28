@@ -261,6 +261,7 @@ export async function getBookings({
               .select("users.email")
               .innerJoin("Membership", "Membership.userId", "users.id")
               .where("Membership.teamId", "in", teamIdsWithBookingPermission)
+              .where("Membership.accepted", "=", true)
           ),
         tables: ["Booking", "Attendee"],
       });
@@ -285,6 +286,7 @@ export async function getBookings({
               .select("users.email")
               .innerJoin("Membership", "Membership.userId", "users.id")
               .where("Membership.teamId", "in", teamIdsWithBookingPermission)
+              .where("Membership.accepted", "=", true)
           ),
         tables: ["Booking", "Attendee", "BookingSeat"],
       });
@@ -329,6 +331,7 @@ export async function getBookings({
               .selectFrom("Membership")
               .select("Membership.userId")
               .where("Membership.teamId", "in", teamIdsWithBookingPermission)
+              .where("Membership.accepted", "=", true)
           ),
         tables: ["Booking"],
       });
@@ -983,6 +986,7 @@ async function getUserIdsFromTeamIds(prisma: PrismaClient, teamIds: number[]): P
           teamId: {
             in: teamIds,
           },
+          accepted: true,
         },
       },
     },

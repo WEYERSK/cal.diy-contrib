@@ -105,11 +105,18 @@ export const createHandler = async ({ ctx, input }: CreateOptions) => {
       fallbackRoles: [MembershipRole.ADMIN, MembershipRole.OWNER],
     });
 
-    if (!isSystemAdmin && !hasOrgEventTypeCreatePermission && !hasCreatePermission) {
-      // If none of the above conditions are met, the user is unauthorized.
-      // which means the user is not admin of the team nor the org.
-      console.warn(`User ${userId} does not have eventType.create permission for team ${teamId}`);
-      throw new TRPCError({ code: "UNAUTHORIZED" });
+    if (!isSystemAdmin && !hasCreatePermission) {
+      // Organization-level permission only covers teams inside the user's own organization.
+      const team = hasOrgEventTypeCreatePermission
+        ? await ctx.prisma.team.findUnique({ where: { id: teamId }, select: { parentId: true } })
+        : null;
+      const isTeamInUsersOrg = !!ctx.user.organizationId && team?.parentId === ctx.user.organizationId;
+
+      if (!isTeamInUsersOrg) {
+        // The user is neither an admin of the team nor of the organization the team belongs to.
+        console.warn(`User ${userId} does not have eventType.create permission for team ${teamId}`);
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
     }
 
     data.team = {
